@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "DQrBqoJBEHE9T43fuHdVkoOIYoDOA3GTHzMlWVOBzFc=",
+  "Source": "CloudForge.Api",
+  "BasePath": "_content/CloudForge.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
