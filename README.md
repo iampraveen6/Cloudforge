@@ -1,361 +1,524 @@
-<div align="center">
+# ADR-0000: CloudForge Architecture Vision
 
-# ☁️ CloudForge
+**Status:** Accepted
 
-### An Open-Source Internal Developer Platform (IDP) for Azure
+**Date:** 2026-07-04
 
-*Empowering developers with self-service infrastructure while enabling platform teams to enforce governance, security, and operational excellence.*
-
-![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet)
-![Azure](https://img.shields.io/badge/Azure-Cloud-0078D4?style=for-the-badge&logo=microsoftazure)
-![React](https://img.shields.io/badge/React-Frontend-61DAFB?style=for-the-badge&logo=react)
-![Docker](https://img.shields.io/badge/Docker-Containers-2496ED?style=for-the-badge&logo=docker)
-![MIT License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+**Author:** Praveen
 
 ---
 
-**🚧 Active Development | Built for learning Platform Engineering, Cloud Architecture & Azure**
+# Overview
 
-</div>
+CloudForge is an **Internal Developer Platform (IDP)** that enables development teams to provision infrastructure, deploy applications, manage configurations, and operate workloads through a unified self-service platform.
 
----
+Unlike traditional cloud management portals, CloudForge focuses on **Developer Experience (DevEx)** by providing opinionated workflows ("Golden Paths") that abstract cloud complexity while enforcing governance, security, and operational standards.
 
-# 📖 Overview
-
-Modern engineering teams shouldn't have to become Azure experts just to deploy an application.
-
-CloudForge is an **Internal Developer Platform (IDP)** inspired by real-world platform engineering practices used by organizations running applications at scale.
-
-It provides a **self-service developer experience** where engineers can provision cloud resources, manage secrets, configure applications, deploy workloads, and monitor services—all through a unified platform.
-
-Rather than exposing developers directly to the complexity of Azure, CloudForge provides opinionated **Golden Paths** that improve developer productivity while enabling platform teams to maintain governance, security, and consistency.
+CloudForge is built as a **Platform as a Product**, where developers are treated as customers and the platform provides a consistent, automated, and secure experience.
 
 ---
 
-# 🎯 Why CloudForge?
+# Vision
 
-As applications scale, development teams often spend significant time managing cloud infrastructure instead of delivering business value.
+Developers should be able to create and deploy applications without becoming experts in Azure.
 
-CloudForge aims to solve this by providing:
+Instead of:
 
-- 🚀 Self-service infrastructure provisioning
-- 🔐 Secure secrets management
-- 📦 Standardized application deployments
-- 📊 Built-in observability
-- ⚙️ Centralized configuration
-- 🏗️ Infrastructure standardization
-- ☁️ Azure-native developer workflows
+```
+Developer
+      ↓
+Azure Portal
+      ↓
+Storage
+Key Vault
+Container Apps
+Networking
+Identity
+```
 
-The goal isn't to replace Azure Portal—it's to provide a **developer-centric abstraction layer** that simplifies common operational tasks.
+CloudForge provides:
 
----
-
-# ✨ Core Features
-
-## 🚀 Application Management
-
-- Create and bootstrap new applications
-- Standardized project templates
-- Environment onboarding
-- Application lifecycle management
-
----
-
-## ⚙️ Configuration Management
-
-- Azure App Configuration integration
-- Environment-specific settings
-- Feature flags
-- Centralized configuration
+```
+Developer
+      ↓
+CloudForge
+      ↓
+Standardized Platform APIs
+      ↓
+Azure Resources
+```
 
 ---
 
-## 🔐 Secrets Management
+# Objectives
 
-- Azure Key Vault integration
-- Secure secret generation
-- Secret versioning
-- Access policy management
+CloudForge is designed to demonstrate modern Platform Engineering concepts including:
 
----
-
-## 📦 Deployment Platform
-
-Deploy workloads to:
-
-- Azure Container Apps
-- Azure Kubernetes Service (AKS)
-
-Features include:
-
-- Deployment history
-- Rollbacks
-- Deployment status
-- Environment promotion
+- Self-Service Infrastructure
+- Platform as a Product
+- Golden Path Development
+- Cloud Governance
+- Infrastructure Standardization
+- Secure by Default
+- Event-Driven Architecture
+- Resource Lifecycle Management
+- Developer Experience
+- Cloud Native Design
 
 ---
 
-## 📦 Container Management
+# Core Principles
 
-- Azure Container Registry integration
-- Image versioning
-- Registry management
-- Deployment artifacts
+## 1. Everything is API First
+
+Every platform capability must be exposed through REST APIs.
+
+The UI and CLI should consume the same APIs.
+
+```
+Web Portal
+
+CLI
+
+Automation
+
+↓
+
+Platform API
+```
 
 ---
 
-## 📊 Observability
+## 2. Everything is Asynchronous
 
-- Azure Monitor integration
-- Centralized logs
+Provisioning cloud resources should never block user requests.
+
+```
+Request
+
+↓
+
+Validation
+
+↓
+
+Queue
+
+↓
+
+Worker
+
+↓
+
+Provision Resource
+```
+
+Benefits:
+
+- Retry support
+- Fault tolerance
+- Scalability
+- Better user experience
+
+---
+
+## 3. Resource Providers
+
+CloudForge should never call Azure SDKs directly from controllers.
+
+Instead:
+
+```
+REST API
+
+↓
+
+Provisioning Engine
+
+↓
+
+Resource Provider
+
+↓
+
+Azure SDK
+
+↓
+
+Azure Service
+```
+
+Every Azure service becomes a provider.
+
+Examples:
+
+- Blob Storage Provider
+- Key Vault Provider
+- App Configuration Provider
+- Container Apps Provider
+- Container Registry Provider
+
+This makes CloudForge extensible and easy to test.
+
+---
+
+## 4. Platform Metadata
+
+CloudForge stores platform metadata separately from Azure resources.
+
+Azure stores infrastructure.
+
+Cosmos DB stores:
+
+- Applications
+- Deployments
+- Teams
+- Resources
+- Audit Logs
+- Environments
+
+This allows CloudForge to build higher-level workflows.
+
+---
+
+## 5. Event Driven Platform
+
+Every significant action produces an event.
+
+Example:
+
+```
+Application Created
+
+↓
+
+Storage Provisioned
+
+↓
+
+Deployment Started
+
+↓
+
+Deployment Completed
+
+↓
+
+Health Check Passed
+```
+
+Events can later drive:
+
+- Notifications
+- Audit Logs
+- Dashboards
 - Metrics
-- Health dashboards
-- Deployment insights
+- Automation
 
 ---
 
-## 🏗️ Platform Services
-
-- Blob Storage provisioning
-- Managed Identity support
-- Resource lifecycle management
-- Self-service infrastructure requests
-
----
-
-# 🏛️ Architecture
+# High-Level Architecture
 
 ```
-                         Developer
-                              │
-                              ▼
-                   ┌─────────────────────┐
-                   │  CloudForge Portal  │
-                   └──────────┬──────────┘
-                              │
-                              ▼
-                  ┌──────────────────────┐
-                  │ Platform API (.NET)  │
-                  └──────────┬───────────┘
-                             │
-                  Provision Request Queue
-                             │
-                             ▼
-                 ┌────────────────────────┐
-                 │ Provisioning Engine    │
-                 └──────────┬─────────────┘
-                            │
-        ┌───────────┬────────────┬─────────────┬─────────────┐
-        ▼           ▼            ▼             ▼
- Blob Storage   Key Vault   App Config   Container Registry
-        │
-        ▼
- Container Apps / AKS
-        │
-        ▼
- Azure Monitor
+                 +----------------------+
+                 | Developer Portal     |
+                 | (React + TypeScript) |
+                 +----------+-----------+
+                            |
+                            |
+                 REST / HTTPS
+                            |
+                 +----------v-----------+
+                 | CloudForge API       |
+                 | (.NET 9 Minimal API) |
+                 +----------+-----------+
+                            |
+          +-----------------+-----------------+
+          |                                   |
+          |                                   |
++---------v----------+             +----------v---------+
+| Provision Queue    |             | Cosmos DB          |
++---------+----------+             +--------------------+
+          |
+          |
++---------v-----------+
+| Provision Worker    |
++---------+-----------+
+          |
+          |
++---------v------------------------------+
+| Resource Provider Framework            |
++---------+--------------+---------------+
+          |              |
+          |              |
+ Blob Provider     KeyVault Provider
+ AppConfig Provider Container Provider
+ Queue Provider     Monitor Provider
+          |
+          |
++---------v-------------------------------+
+| Azure Services (via Floci)              |
++-----------------------------------------+
 ```
 
-CloudForge follows an **event-driven architecture** where infrastructure provisioning is asynchronous, scalable, and resilient.
+---
+
+# Component Responsibilities
+
+## Developer Portal
+
+Responsible for:
+
+- User interface
+- Dashboards
+- Application management
+- Resource visualization
+
+No provisioning logic should exist here.
 
 ---
 
-# 🧩 Technology Stack
+## Platform API
 
-| Layer | Technology |
-|--------|------------|
-| Frontend | React + TypeScript |
-| Backend | .NET 9 |
-| API | Azure Functions / Minimal APIs |
-| Database | Azure Cosmos DB |
-| Storage | Azure Blob Storage |
-| Messaging | Azure Queue Storage |
-| Configuration | Azure App Configuration |
-| Secrets | Azure Key Vault |
-| Containers | Azure Container Registry |
-| Compute | Azure Container Apps / AKS |
-| Monitoring | Azure Monitor |
-| Local Azure | Floci |
-| CI/CD | GitHub Actions *(Planned)* |
+Responsible for:
+
+- Authentication
+- Validation
+- Authorization
+- Queueing requests
+- Returning operation status
+
+Should never directly provision Azure resources.
 
 ---
 
-# 🛠️ Platform Engineering Principles
+## Provisioning Engine
 
-CloudForge is built around modern Platform Engineering concepts.
+Responsible for:
 
-✅ Self-Service Infrastructure
-
-✅ Golden Path Development
-
-✅ Infrastructure Abstraction
-
-✅ Platform as a Product
-
-✅ Cloud Governance
-
-✅ Security by Default
-
-✅ Event-Driven Architecture
-
-✅ Observability First
-
-✅ Developer Experience (DevEx)
-
-✅ Cloud-Native Design
+- Reading queue messages
+- Selecting appropriate provider
+- Executing provisioning
+- Updating metadata
+- Publishing events
 
 ---
 
-# 📁 Project Structure
+## Resource Providers
+
+Responsible for one Azure service only.
+
+Each provider implements a common interface.
+
+```csharp
+public interface IResourceProvider
+{
+    Task ProvisionAsync(ResourceRequest request);
+
+    Task DeleteAsync(string resourceId);
+
+    Task<ResourceStatus> GetStatusAsync(string resourceId);
+}
+```
+
+---
+
+## Cosmos DB
+
+Stores CloudForge state.
+
+Examples:
+
+Applications
+
+Deployments
+
+Audit Logs
+
+Resources
+
+Teams
+
+Environments
+
+---
+
+# Repository Structure
 
 ```
 CloudForge/
 
-├── backend/
-├── frontend/
-├── workers/
-├── cli/
-├── sdk/
-├── infrastructure/
-├── docs/
-├── scripts/
-├── tests/
-└── .github/
+backend/
+
+frontend/
+
+workers/
+
+providers/
+
+sdk/
+
+cli/
+
+docs/
+
+tests/
+
+scripts/
+
+docker/
+
+.github/
 ```
 
 ---
 
-# 🚀 Developer Workflow
+# Domain Model
+
+```
+Organization
+
+↓
+
+Team
+
+↓
+
+Application
+
+↓
+
+Environment
+
+↓
+
+Resources
+
+↓
+
+Deployment
+
+↓
+
+Monitoring
+```
+
+---
+
+# Request Lifecycle
 
 ```
 Developer
 
-     │
+↓
 
-     ▼
+API
 
-Create Application
+↓
 
-     │
+Validation
 
-Configure Settings
+↓
 
-     │
+Queue
 
-Generate Secrets
+↓
 
-     │
+Worker
 
-Provision Infrastructure
+↓
 
-     │
+Provider
 
-Deploy Application
+↓
 
-     │
+Azure
 
-Monitor Health
+↓
 
-     │
+Metadata Update
 
-Scale & Operate
+↓
+
+Event
+
+↓
+
+Dashboard
 ```
 
-CloudForge abstracts these operations behind a unified API, dashboard, and CLI.
+---
+
+# Technology Decisions
+
+| Area | Technology |
+|--------|------------|
+| Backend | .NET 9 |
+| Frontend | React |
+| Storage | Cosmos DB |
+| Queue | Azure Queue Storage |
+| Secrets | Azure Key Vault |
+| Config | Azure App Configuration |
+| Storage | Blob Storage |
+| Monitoring | Azure Monitor |
+| Containers | Azure Container Apps |
+| Kubernetes | AKS |
+| Local Azure | Floci |
 
 ---
 
-# 🗺️ Roadmap
+# Non-Goals
 
-## Phase 1 — Foundation
+CloudForge is **not** intended to replace:
 
-- [x] Solution Architecture
-- [x] Repository Setup
-- [ ] Platform API
-- [ ] Developer Portal
-
-## Phase 2 — Platform Core
-
-- [ ] Application Management
-- [ ] Resource Provisioning Engine
-- [ ] Blob Storage Provider
-- [ ] Key Vault Provider
-- [ ] App Configuration Provider
-
-## Phase 3 — Deployments
-
-- [ ] Azure Container Registry
-- [ ] Azure Container Apps
-- [ ] AKS Support
-- [ ] Deployment History
-
-## Phase 4 — Operations
-
-- [ ] Azure Monitor Integration
-- [ ] Audit Logs
-- [ ] Metrics Dashboard
-- [ ] Health Monitoring
-
-## Phase 5 — Developer Experience
-
-- [ ] CloudForge CLI
-- [ ] RBAC
-- [ ] Multi-tenancy
-- [ ] Service Catalog
-
----
-
-# 🎯 Learning Objectives
-
-CloudForge is a portfolio project focused on mastering:
-
-- Platform Engineering
-- Azure Cloud Architecture
-- Event-Driven Systems
-- Infrastructure Automation
-- Cloud-Native Development
-- Developer Platforms
-- Kubernetes
-- Container Platforms
-- Secure Configuration Management
-- Observability
-- Azure SDK
-- Distributed Systems
-
----
-
-# 🌟 Inspiration
-
-CloudForge draws inspiration from industry-leading platform engineering tools:
-
-- Backstage
-- Azure Developer CLI (azd)
 - Azure Portal
-- Crossplane
-- Dapr
+- Azure CLI
+- Azure Resource Manager
+
+Instead, it provides opinionated workflows for internal development teams.
+
+---
+
+# Success Criteria
+
+CloudForge should demonstrate:
+
+✅ Platform Engineering
+
+✅ Azure Architecture
+
+✅ Event-Driven Systems
+
+✅ Resource Providers
+
+✅ Infrastructure Automation
+
+✅ Cloud Native Design
+
+✅ Secure Secret Management
+
+✅ Observability
+
+✅ Developer Experience
+
+✅ Extensible Architecture
+
+---
+
+# Future Extensions
+
 - Kubernetes Operators
-- Humanitec
+- Terraform Integration
+- GitHub Actions
+- Azure DevOps
+- Multi-tenancy
+- Service Catalog
+- AI-assisted Platform Operations
 
 ---
 
-# 🤝 Contributing
+# Guiding Philosophy
 
-Contributions, feature suggestions, and discussions are welcome.
+> "Platform teams should build paved roads, not traffic rules."
 
-If you're interested in Platform Engineering, Azure, or Cloud Native development, feel free to open an issue or submit a pull request.
-
----
-
-# 📜 License
-
-This project is licensed under the MIT License.
-
----
-
-<div align="center">
-
-### ⭐ If you find CloudForge interesting, consider giving the repository a star!
-
-**Building modern Platform Engineering concepts one commit at a time.**
-
-</div>
+CloudForge aims to provide a paved road where developers can safely and efficiently build, deploy, and operate applications without needing to understand every detail of the underlying cloud infrastructure.
