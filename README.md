@@ -4,6 +4,13 @@
 
 ### An Open-Source Internal Developer Platform (IDP) for Azure
 
+| Project Snapshot | |
+|---|---|
+| **What it is** | An Azure Internal Developer Platform (IDP) that provisions cloud resources, manages secrets, and deploys apps through a self-service portal. |
+| **Why it matters** | Demonstrates platform engineering, golden paths, governance, and developer experience at scale. |
+| **Tech stack** | .NET, React, TypeScript, Azure Functions, Cosmos DB, Key Vault, Container Apps/AKS, Azure Monitor. |
+| **Key outcomes** | Self-service provisioning, secure secret management, observability, and CI/CD-ready architecture. |
+
 *Empowering developers with self-service infrastructure while enabling platform teams to enforce governance, security, and operational excellence.*
 
 ![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet)
@@ -180,6 +187,15 @@ CloudForge follows an **event-driven architecture** where infrastructure provisi
 
 ---
 
+# 🚀 Deployment
+
+CloudForge is designed for Azure. A full deployment guide using Terraform and GitHub Actions is in progress.
+
+- **Target:** Azure Container Apps or AKS
+- **Infrastructure:** Terraform / Bicep
+- **CI/CD:** GitHub Actions
+- **Monitoring:** Azure Monitor and Application Insights
+
 # 💻 Local Development
 
 CloudForge uses **Floci** for local Azure emulation, enabling development without requiring an Azure subscription.
@@ -195,7 +211,7 @@ CloudForge uses **Floci** for local Azure emulation, enabling development withou
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/CloudForge.git
+git clone https://github.com/iampraveen6/Cloudforge.git
 cd CloudForge
 ```
 
