@@ -18,6 +18,7 @@
 ![React](https://img.shields.io/badge/React-Frontend-61DAFB?style=for-the-badge&logo=react)
 ![Docker](https://img.shields.io/badge/Docker-Containers-2496ED?style=for-the-badge&logo=docker)
 ![MIT License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![CI/CD](https://img.shields.io/badge/CI/CD-Planned-lightgrey?style=for-the-badge)
 
 ---
 
@@ -131,6 +132,21 @@ Features include:
 ---
 
 # 🏛️ Architecture
+
+```mermaid
+graph TD
+    Developer[Developer] -->|Self-service| Portal[CloudForge Portal]
+    Portal -->|REST API| API[Platform API .NET]
+    API -->|Queue| Engine[Provisioning Engine]
+    Engine --> CosmosDB[(Cosmos DB)]
+    Engine --> KeyVault[Azure Key Vault]
+    Engine --> AppConfig[Azure App Configuration]
+    Engine --> Blob[Azure Blob Storage]
+    Engine --> ACR[Azure Container Registry]
+    Engine --> Compute[Azure Container Apps / AKS]
+    Compute --> ACR
+    Compute --> Monitor[Azure Monitor]
+```
 
 ```
                          Developer
@@ -572,6 +588,10 @@ CloudForge draws inspiration from industry-leading platform engineering tools:
 - Humanitec
 
 ---
+
+## 📸 Screenshots
+
+> Coming soon — screenshots of the CloudForge portal, provisioning requests, and Azure deployments will be added here.
 
 # 🤝 Contributing
 
